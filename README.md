@@ -11,4 +11,4 @@ Os tokens da linguagem:
 Comentários são feitos usando o caractere de arroba (`@`)
 
 ## Como usar
-Ao abrir o programa com usando Python, será pedido o nome do arquivo com o código com que será usado pelo analisador. Por padrão, se nenhum nome for inserido, o nome do arquivo será `input.txt`. Após a análise, o resultado será escrito no arquivo `output.txt`.
+Abra o arquivo `main.py` usando o Python. Será pedido o nome do arquivo com o código com que será usado pelo analisador. Por padrão, se nenhum nome for inserido, o nome do arquivo será `input.txt`. Após a análise, o resultado será escrito no arquivo `output.txt`.
