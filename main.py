@@ -1,46 +1,23 @@
+from token import *
 import re
-
-class Token():
-	def __init__(self, _id, valor):
-		self.id = _id
-		self.valor = valor
-
-class Numero():
-	def __init__(self, _id, valor):
-		Token.__init__(self, _id, valor)
-
-class Operador():
-	def __init__(self, _id, valor):
-		Token.__init__(self, _id, valor)
-
-class Pontuacao():
-	def __init__(self, _id, valor):
-		Token.__init__(self, _id, valor)
-
-def isNumero(string):
-	numeros = re.compile(r'[0-9]+')
-	if numeros.match(string):
-		return True
-	return False
-
-def isOperador(string):
-	operadores = re.compile(r'(\+|\-|\/|\*{1,2})')
-	if operadores.match(string):
-		return True
-	return False
-
-def isPontuacao(string):
-	pontuacao = re.compile(r'(\(|\))')
-	if pontuacao.match(string):
-		return True
-	return False
+import time
 
 class AnalisadorLexico():
-	def __init__(self):
+	def __init__(self, nome_arquivo):
+		self.nome_arquivo = nome_arquivo
 		self.tokens = []
 
+	def abrir_arquivo(self):
+		try:
+			arquivo = open(self.nome_arquivo, 'tr')
+		except FileNotFoundError as expection:
+			print('Arquivo não encontrado.')
+			exit()
+		else:
+			return arquivo
+
 	def analisar(self):
-		arquivo = open('test.txt', 'tr')
+		arquivo = self.abrir_arquivo()
 		dados = arquivo.read()
 		linhas = dados.splitlines()
 		arquivo.close()
@@ -49,18 +26,22 @@ class AnalisadorLexico():
 		for linha in linhas:
 			if linha.startswith('@'):
 				continue
-			ltokens.append(linha.split())
+			partes = linha.split()
+			for token in partes:
+				token_partes = Pontuacao.dividir_pontuacao(token)
+				ltokens.extend(token_partes)
+
 
 		id_atual = 0
-		for linha in ltokens:
-			for token in linha:
-				if isNumero(token):
-					self.tokens.append(Numero(id_atual, token))
-				elif isOperador(token):
-					self.tokens.append(Operador(id_atual, token))
-				elif isPontuacao(token):
-					self.tokens.append(Pontuacao(id_atual, token))
-				id_atual += 1
+		for token in ltokens:
+			if Numero.isNumero(token):
+				self.tokens.append(Numero(id_atual, token))
+			elif Operador.isOperador(token):
+				self.tokens.append(Operador(id_atual, token))
+			elif Pontuacao.isPontuacao(token):
+				self.tokens.append(Pontuacao(id_atual, token))
+			id_atual += 1
+
 
 	def salvar_arquivo(self):
 		linhas = []
@@ -70,8 +51,21 @@ class AnalisadorLexico():
 		arquivo.writelines(linhas)
 		arquivo.close()
 
+def main():
+	print('# Analisador Lexico'.upper())
+	print('Escreva abaixo o nome do arquivo que deseja analisar.')
+	print('O nome padrão para arquivo é output.txt')
+	print('Se não desejar mante-lo, aperte ENTER.')
+	
+	nome_arquivo = input(">> ")
+	if nome_arquivo == '':
+			nome_arquivo = 'input.txt'
+	
+	analisador = AnalisadorLexico(nome_arquivo)
+	analisador.analisar()
+	analisador.salvar_arquivo()
+	print('Arquivo analisado e salvo no arquivo output.txt')
+
 if __name__ == '__main__':
-	ana = AnalisadorLexico()
-	ana.analisar()
-	ana.salvar_arquivo()
-	pass
+	main()
+	time.sleep(2)
